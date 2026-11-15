@@ -1,0 +1,64 @@
+<Window
+    x:Class="ElementBlocks.Desktop.Views.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Element Blocks Desktop · 设置">
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 自定义标题栏（WinUI3：ExtendsContentIntoTitleBar + SetTitleBar） -->
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Padding="16,0,16,0"
+              Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <Border Width="20" Height="20" CornerRadius="3"
+                        Background="#EFE3C0" BorderBrush="#8C7B55" BorderThickness="1">
+                    <TextBlock Text="E" FontSize="13" FontWeight="SemiBold"
+                               Foreground="#B23A2E" HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="Element Blocks Desktop" FontSize="13"
+                           FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock Text="设置" Opacity="0.6" FontSize="12" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock x:Name="VersionText" Text="v1.0" Opacity="0.45" FontSize="11"
+                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- 侧边栏：WinUI3 NavigationView，两页对应需求里的第一页 / 第二页 -->
+        <NavigationView x:Name="Nav" Grid.Row="1"
+                        PaneDisplayMode="Left" OpenPaneLength="220"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        IsPaneToggleButtonVisible="False"
+                        SelectionChanged="Nav_SelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="元素周期表" Tag="PeriodicTable" IsSelected="True">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE80A;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="轮换时间" Tag="Rotation">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE823;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+            <NavigationView.PaneFooter>
+                <StackPanel Padding="16,12" Spacing="4">
+                    <TextBlock Text="点击元素卡片即可启用 / 禁用" FontSize="11"
+                               Opacity="0.6" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="StatusText" Text="已启用 118 / 118" FontSize="11"
+                               Opacity="0.6"/>
+                </StackPanel>
+            </NavigationView.PaneFooter>
+            <Frame x:Name="ContentFrame" Margin="4,0,0,0"/>
+        </NavigationView>
+    </Grid>
+</Window>

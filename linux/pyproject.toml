@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "element-blocks-desktop"
+version = "1.0.0"
+description = "Always-on desktop element block with periodic-table rotation (GTK3 native UI)"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+dependencies = []
+
+[project.scripts]
+element-blocks-desktop = "element_blocks_desktop.main:main"
+
+[tool.setuptools]
+packages = ["element_blocks_desktop"]

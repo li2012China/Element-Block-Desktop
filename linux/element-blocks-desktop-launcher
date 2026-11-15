@@ -1,0 +1,13 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+"""Installed launcher. Debian puts the pure-Python package in /usr/lib."""
+import sys
+
+INSTALLED_LIB = "/usr/lib/element-blocks-desktop"
+if INSTALLED_LIB not in sys.path:
+    sys.path.insert(0, INSTALLED_LIB)
+
+from element_blocks_desktop.main import main  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

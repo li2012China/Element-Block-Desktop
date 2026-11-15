@@ -1,0 +1,75 @@
+{
+  "$schemaVersion": 1,
+  "tile": {
+    "background": "#EFE3C0",
+    "foreground": "#2B2A28",
+    "accent": "#B23A2E",
+    "border": "#8C7B55",
+    "borderWidth": 1.0,
+    "cornerRadius": 2.0,
+    "disabledOpacity": 0.32,
+    "fontNumber": 15,
+    "fontSymbol": 17,
+    "fontNameZh": 46,
+    "fontNameEn": 14,
+    "fontMass": 15
+  },
+  "categories": {
+    "alkali": {
+      "fill": "#EFE3C0",
+      "text": "#2B2A28",
+      "border": "#C9B98F"
+    },
+    "alkaline": {
+      "fill": "#EFE3C0",
+      "text": "#2B2A28",
+      "border": "#C9B98F"
+    },
+    "transition": {
+      "fill": "#F3E7C6",
+      "text": "#2B2A28",
+      "border": "#B23A2E"
+    },
+    "post_transition": {
+      "fill": "#EFE3C0",
+      "text": "#2B2A28",
+      "border": "#C9B98F"
+    },
+    "metalloid": {
+      "fill": "#A9C79A",
+      "text": "#20321D",
+      "border": "#5F8C6B"
+    },
+    "nonmetal": {
+      "fill": "#5F8C6B",
+      "text": "#F7F3E6",
+      "border": "#3F6A4B"
+    },
+    "halogen": {
+      "fill": "#5F8C6B",
+      "text": "#F7F3E6",
+      "border": "#3F6A4B"
+    },
+    "noble": {
+      "fill": "#C7D98B",
+      "text": "#2B2A28",
+      "border": "#8FA85A"
+    },
+    "lanthanide": {
+      "fill": "#F0DCD5",
+      "text": "#2B2A28",
+      "border": "#B23A2E"
+    },
+    "actinide": {
+      "fill": "#F0DCD5",
+      "text": "#2B2A28",
+      "border": "#B23A2E"
+    }
+  },
+  "settings": {
+    "windowsBackdrop": "Mica",
+    "sidebarWidth": 220,
+    "windowWidth": 1160,
+    "windowHeight": 780
+  }
+}

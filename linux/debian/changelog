@@ -1,0 +1,77 @@
+element-blocks-desktop (1.0.0-5) unstable; urgency=medium
+
+  * Desktop-layer policy refined: the tile always lives on the desktop layer
+    (below normal windows). It now hides ONLY when a maximized or fullscreen
+    window overlaps the current monitor, and stays fully visible in every
+    normal desktop state.
+  * Fix "show desktop" (X11 _NET_SHOWING_DESKTOP) wrongly hiding the tile:
+    showing-desktop state is treated as "must stay visible", which also closes
+    the bug where triggering Show Desktop made the tile disappear.
+  * Add an opacity setting (10%-100%): applied in real time via
+    window.set_opacity() and persisted to config.json (clamped 0.1-1.0,
+    NaN/empty fall back to 1.0). It is broadcast through a dedicated
+    "appearance" event so changing opacity never re-lays-out the window.
+  * Rotation interval selector changed from RadioButtons to a ComboBoxText;
+    the "switch to next element now" button moved to the right of that
+    ComboBox in the same row, keeping the layout compact.
+  * Add cover_policy.py (pure decision: should_be_hidden) and
+    tools/test_visibility_opacity.py (48 pure-Python checks covering the
+    opacity clamp/persistence, show-desktop truth table, rect_overlap and the
+    rotation_page ComboBox/opacity wiring; runs without GTK on any machine).
+
+ -- Element Blocks Desktop <maintainer@example.com>  Sat, 14 Nov 2026 10:00:00 +0800
+
+element-blocks-desktop (1.0.0-4) unstable; urgency=medium
+
+  * Fix the desktop tile disappearing after a single click. Root causes:
+    (a) with clickThrough enabled the empty X11 input shape forwarded the
+        click to the desktop shell, which raised itself above the keep-below
+        tile; (b) the window had no delete/window-state/visibility/map
+        handlers, so a WM hide, unmap or WM_DELETE_WINDOW was permanent (and
+        destroying the only window also quit Gtk.Application);
+    (c) the 15s rotation tick emitted "settings", re-running resize/move
+        on the desktop-layer window and letting the WM re-stack it.
+  * The tile now consumes button press/release with no side effects, refuses
+    deletion, and self-heals visibility/stacking via visibility-notify,
+    window-state, map/unmap events and a 2s watchdog (throttled + capped).
+    Window geometry is re-applied only when a geometry signature changes;
+    schedule ticks use a separate "schedule" event.
+  * clickThrough now defaults to False; a one-time migration marker resets
+    legacy configs. Gtk.Application holds a reference so the process cannot
+    exit because of an accidental window destroy.
+  * Add widget_guard.py, tools/test_click_guard.py (pure-Python regression)
+    and tools/repro_click_gtk.py (on-device GTK reproduction script).
+
+ -- Element Blocks Desktop <maintainer@example.com>  Fri, 13 Nov 2026 23:10:00 +0800
+
+element-blocks-desktop (1.0.0-3) unstable; urgency=medium
+
+  * Fix the desktop tile running past the screen edge on HiDPI / scaled
+    desktops: clamp the real GDK window size (not the nominal blockSize) in
+    device pixels, fit the size to the monitor workarea, lock it with
+    geometry hints, and re-verify the window origin after the WM places it.
+  * Fix text drawing outside the tile: clip all drawing to the tile rect,
+    fit each Pango line into its own box (font shrink + ellipsis), and keep
+    the mass line inside the bottom padding. Visual style is unchanged.
+  * Add pure-Python layout helpers and tools/test_layout.py regression tests.
+
+ -- Element Blocks Desktop <maintainer@example.com>  Fri, 13 Nov 2026 22:45:00 +0800
+
+element-blocks-desktop (1.0.0-2) unstable; urgency=medium
+
+  * Drop the overly strict "python3 (>= 3.9)" dependency. Every annotated
+    module uses `from __future__ import annotations`, the sources parse as
+    Python 3.7 syntax and use no 3.8+ runtime APIs, so any distribution's
+    default python3 works. Fixes the "python3:amd64 3.9 / dependency not
+    satisfied" error on Debian 10 based systems (deepin / UOS / Kylin) that
+    ship python3 3.7 or 3.8.
+  * tools/build_deb.py now merges SHA256SUMS.txt instead of overwriting it.
+
+ -- Element Blocks Desktop <maintainer@example.com>  Fri, 13 Nov 2026 22:35:00 +0800
+
+element-blocks-desktop (1.0.0-1) unstable; urgency=medium
+
+  * Initial release: GTK3 tray app, 118-element periodic table settings,
+    interval-based rotation, XDG config persistence, X11/Wayland handling.
+
+ -- Element Blocks Desktop <maintainer@example.com>  Fri, 13 Nov 2026 21:30:00 +0800

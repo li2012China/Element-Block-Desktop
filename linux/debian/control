@@ -1,0 +1,32 @@
+Source: element-blocks-desktop
+Section: utils
+Priority: optional
+Maintainer: Element Blocks Desktop <maintainer@example.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: element-blocks-desktop
+Architecture: all
+Depends: ${misc:Depends},
+         python3,
+         python3-gi,
+         python3-gi-cairo,
+         gir1.2-gtk-3.0
+Recommends: gir1.2-ayatanaappindicator3-0.1,
+            libayatana-appindicator3-1,
+            gir1.2-appindicator3-0.1,
+            fonts-noto-cjk
+Suggests: gnome-shell-extension-appindicator
+Description: always-on desktop element block with periodic-table rotation
+ Element Blocks Desktop pins a small chemical-element tile at a fixed position
+ on the desktop. It has no taskbar entry and lives in the system tray; clicking
+ the tray icon opens a settings window with a sidebar: a periodic table where
+ each of the 118 elements can be enabled or disabled, and a rotation page that
+ switches to the next enabled element on a chosen interval (from "never" up to
+ "every day").
+ .
+ The Linux build uses native GTK3 widgets (no Electron, no WebView). On X11 the
+ tile is a real _NET_WM_WINDOW_TYPE_DESKTOP window; on Wayland it falls back to
+ a borderless, focus-free, keep-below window because the protocol does not allow
+ absolute positioning of desktop-type windows.

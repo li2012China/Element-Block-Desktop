@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Element Blocks Desktop
+Name[zh_CN]=元素方块桌面
+GenericName=Desktop element block
+GenericName[zh_CN]=桌面元素方块
+Comment=Always-on desktop element block with periodic-table rotation
+Comment[zh_CN]=桌面常驻元素方块，可按周期自动轮换元素
+Exec=element-blocks-desktop
+Icon=element-blocks-desktop
+Terminal=false
+Categories=Utility;Education;Science;
+Keywords=chemistry;periodic table;element;widget;
+StartupNotify=false
+NoDisplay=false

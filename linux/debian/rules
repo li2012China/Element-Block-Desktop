@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+# 纯 Python + 数据文件，直接手工安装，避免 pybuild 把 /usr/share 的数据契约拆散。
+export PYBUILD_DISABLE=1
+export DH_VERBOSE=1
+
+PKG = $(CURDIR)/debian/element-blocks-desktop
+LIB = $(PKG)/usr/lib/element-blocks-desktop
+SHARE = $(PKG)/usr/share
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+override_dh_auto_clean:
+
+override_dh_auto_install:
+	mkdir -p $(LIB)
+	cp -a element_blocks_desktop $(LIB)/
+	# 只读数据契约（与 Windows 端共用 shared/*.json，由 tools/sync_data.py 同步）
+	mkdir -p $(SHARE)/element-blocks-desktop/data
+	cp -a data/elements.json data/theme.json data/intervals.json data/config.schema.json \
+	      $(SHARE)/element-blocks-desktop/data/
+	install -D -m 0644 data/element-blocks-desktop-autostart.desktop \
+	      $(SHARE)/element-blocks-desktop/element-blocks-desktop-autostart.desktop
+	install -D -m 0755 element-blocks-desktop-launcher $(PKG)/usr/bin/element-blocks-desktop
+	install -D -m 0644 data/element-blocks-desktop.desktop \
+	      $(SHARE)/applications/element-blocks-desktop.desktop
+	for s in 16 32 48 64 128 256; do \
+	    install -D -m 0644 data/icons/hicolor/$${s}x$${s}/apps/element-blocks-desktop.png \
+	      $(SHARE)/icons/hicolor/$${s}x$${s}/apps/element-blocks-desktop.png; \
+	done
+	install -D -m 0644 data/icons/hicolor/scalable/apps/element-blocks-desktop.svg \
+	      $(SHARE)/icons/hicolor/scalable/apps/element-blocks-desktop.svg

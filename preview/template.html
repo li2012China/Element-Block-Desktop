@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Element Blocks Desktop · 交互预览</title>
+<style>
+:root{
+  --bg:#0d1119; --panel:#171c27; --panel2:#1e2432; --line:#2c3446;
+  --text:#e9edf6; --muted:#8d97ad; --accent:#e6bd72; --red:#b23a2e;
+  --tile-bg:#EFE3C0; --tile-fg:#2B2A28;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;font-family:"Noto Sans CJK SC","Microsoft YaHei","Segoe UI",sans-serif;color:var(--text);background:var(--bg)}
+button{font-family:inherit;cursor:pointer}
+.hidden{display:none !important}
+
+/* ---------- desktop ---------- */
+#desktop{position:fixed;inset:0;background:
+  radial-gradient(1100px 680px at 18% 8%,#25344f 0%,transparent 62%),
+  radial-gradient(900px 640px at 88% 82%,#2b2342 0%,transparent 62%),
+  linear-gradient(155deg,#0c1018,#141b2a 58%,#0e1420);}
+#desktop::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:46px 46px}
+#hint{position:absolute;left:26px;top:24px;max-width:330px;font-size:12px;line-height:1.75;color:#b9c3d8;
+  background:rgba(12,16,24,.42);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:12px 14px;backdrop-filter:blur(8px)}
+#hint b{color:var(--accent);font-size:13px}
+.dicon{position:absolute;left:30px;width:64px;text-align:center;font-size:11px;color:#d6dcea;opacity:.72}
+.dicon i{display:block;width:38px;height:38px;margin:0 auto 6px;border-radius:9px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.14)}
+.dicon:nth-of-type(1){top:170px}.dicon:nth-of-type(2){top:262px}.dicon:nth-of-type(3){top:354px}
+
+/* ---------- element tile ---------- */
+#tile{position:absolute;width:132px;height:132px;background:var(--tile-bg);color:var(--tile-fg);
+  border:1px solid #8C7B55;border-radius:2px;padding:8px 9px;z-index:3;
+  box-shadow:0 10px 28px rgba(0,0,0,.42),0 0 0 1px rgba(0,0,0,.18);
+  display:flex;flex-direction:column;overflow:hidden;transition:left .25s,top .25s,width .2s,height .2s}
+#tile .top{display:flex;justify-content:space-between;font-size:15px;line-height:1;height:18px}
+#tile .zh{flex:1;display:flex;align-items:center;justify-content:center;font-family:"Noto Serif CJK SC","SimSun",serif;
+  font-size:50px;line-height:1;margin-top:-4px}
+#tile .en{font-size:13px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tile .mass{font-size:14px;font-weight:700;text-align:center;margin-top:1px}
+#tile.clickthrough{pointer-events:none}
+
+/* ---------- taskbar / tray ---------- */
+#taskbar{position:fixed;left:0;right:0;bottom:0;height:46px;z-index:8;display:flex;align-items:center;
+  justify-content:space-between;padding:0 14px;background:rgba(16,20,30,.78);border-top:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(14px)}
+.tb-left,.tb-right{display:flex;align-items:center;gap:10px}
+.tb-dot{width:20px;height:20px;border-radius:5px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12)}
+#clock{font-size:12px;color:#cfd7e7;min-width:96px;text-align:right;font-variant-numeric:tabular-nums}
+#tray-btn{width:30px;height:30px;border:0;border-radius:5px;background:var(--tile-bg);color:var(--tile-fg);
+  font-weight:800;font-size:17px;position:relative;box-shadow:0 0 0 1px #8C7B55}
+#tray-btn::before{content:"";position:absolute;left:4px;top:4px;width:6px;height:6px;background:var(--red)}
+#tray-menu{position:fixed;right:12px;bottom:54px;z-index:30;width:226px;background:#212735;
+  border:1px solid #39435a;border-radius:9px;padding:6px;box-shadow:0 18px 44px rgba(0,0,0,.55)}
+#tray-menu button{display:flex;width:100%;gap:9px;align-items:center;background:none;border:0;color:var(--text);
+  text-align:left;padding:9px 10px;border-radius:6px;font-size:12.5px}
+#tray-menu button:hover{background:#303950}
+#tray-menu hr{border:0;border-top:1px solid #39435a;margin:5px 4px}
+.chk{display:inline-block;width:14px;color:var(--accent)}
+
+/* ---------- settings window ---------- */
+#overlay{position:fixed;inset:0;z-index:20;background:rgba(6,9,15,.55);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center}
+#win{width:min(1180px,calc(100vw - 64px));height:min(790px,calc(100vh - 76px));background:var(--panel);
+  border:1px solid #39435a;border-radius:12px;box-shadow:0 34px 90px rgba(0,0,0,.65);display:flex;flex-direction:column;overflow:hidden}
+#titlebar{height:44px;flex:0 0 44px;display:flex;align-items:center;gap:11px;padding:0 16px;
+  background:#1b2130;border-bottom:1px solid var(--line)}
+#titlebar .mark{width:21px;height:21px;border-radius:4px;background:var(--tile-bg);border:1px solid #8C7B55;
+  color:var(--red);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px}
+#titlebar .t{font-size:13px;font-weight:600}#titlebar .s{font-size:11px;color:var(--muted)}
+#titlebar .sp{flex:1}#titlebar .ver{font-size:11px;color:var(--muted)}
+#close-win{width:30px;height:28px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-size:18px}
+#close-win:hover{background:#3a2230;color:#ff9b95}
+#win-body{flex:1;display:flex;min-height:0}
+#sidebar{width:216px;flex:0 0 216px;background:#141a26;border-right:1px solid var(--line);padding:16px 10px;display:flex;flex-direction:column}
+.nav{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:7px;font-size:13px;color:#b9c3d8;margin-bottom:4px;cursor:pointer}
+.nav:hover{background:#222a3a}.nav.active{background:#2b3549;color:#fff;box-shadow:inset 3px 0 0 var(--accent)}
+.nav .ic{width:18px;text-align:center;opacity:.85}
+#side-foot{margin-top:auto;font-size:11px;color:var(--muted);line-height:1.7;padding:10px 12px;border-top:1px solid var(--line)}
+#content{flex:1;min-width:0;overflow:auto;padding:22px 26px 30px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:14px;margin:22px 0 10px}
+.sub{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 16px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.btn{background:#252d3e;color:var(--text);border:1px solid #37415a;border-radius:6px;padding:7px 12px;font-size:12px}
+.btn:hover{background:#313c52}.btn.primary{background:#c9a35f;border-color:#c9a35f;color:#201a10;font-weight:600}
+.btn.primary:hover{background:#dcb771}
+.count{margin-left:auto;font-size:12px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 12px;font-size:10.5px;color:var(--muted)}
+.legend span.sw{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-2px;margin-right:4px;border:1px solid rgba(0,0,0,.35)}
+#table-wrap{background:#121722;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;max-height:58vh}
+#table{display:grid;grid-template-columns:30px repeat(18,58px);grid-template-rows:22px repeat(7,60px) 18px 60px 60px;gap:2px;width:max-content}
+.hdr{display:flex;align-items:center;justify-content:center;font-size:10.5px;color:var(--muted)}
+.ph{border:1.5px solid var(--red);border-radius:3px;background:#e8deca;color:#4a3b31;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;font-size:10px;line-height:1.5}
+.el{border-radius:3px;border:1px solid;padding:3px 4px;display:flex;flex-direction:column;justify-content:space-between;
+  cursor:pointer;transition:transform .12s,opacity .12s,box-shadow .12s;min-width:0}
+.el:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(0,0,0,.45);z-index:2}
+.el .r1{display:flex;justify-content:space-between;font-size:9px;line-height:1}
+.el .r1 b{font-size:11.5px}
+.el .zh{text-align:center;font-size:18px;line-height:1}
+.el .mass{text-align:center;font-size:8.5px;opacity:.85}
+.el.off{opacity:.28;filter:grayscale(.7)}
+.el.cur{outline:2px solid var(--accent);outline-offset:1px}
+
+/* rotation page */
+.card{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;background:#1b2130;border:1px solid var(--line);
+  border-radius:8px;padding:16px 18px;margin-bottom:6px}
+.card .k{font-size:10.5px;color:var(--muted);margin-bottom:6px}
+.card .v{font-size:15px;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:6px;max-width:640px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;
+  background:#1b2130;cursor:pointer}
+.opt:hover{border-color:#4a5772}.opt.sel{border-color:var(--accent);background:#242a38}
+.opt input{margin-top:3px;accent-color:var(--accent)}
+.opt .lab{font-size:13px}.opt .desc{font-size:11px;color:var(--muted);margin-top:2px}
+.row{display:flex;align-items:center;gap:12px;max-width:640px;padding:9px 0;border-bottom:1px solid #232b3c}
+.row .lab{flex:1}.row .lab b{font-size:12.5px;font-weight:600}.row .lab div{font-size:10.5px;color:var(--muted);margin-top:2px}
+.sw{width:40px;height:22px;border-radius:12px;background:#3b4358;border:0;position:relative;transition:.18s;flex:0 0 40px}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#e9edf6;transition:.18s}
+.sw.on{background:#c9a35f}.sw.on::after{left:21px;background:#201a10}
+select,input[type=range]{accent-color:var(--accent)}
+select{background:#222a3a;color:var(--text);border:1px solid #39435a;border-radius:6px;padding:6px 9px;font-size:12px}
+input[type=range]{width:100%}
+.note{font-size:11px;color:var(--muted);line-height:1.7;margin-top:14px}
+#cfg-json{margin-top:12px;background:#10151f;border:1px solid var(--line);border-radius:7px;padding:12px;
+  font:11px/1.6 Consolas,Monaco,monospace;color:#a9c7a0;white-space:pre-wrap;max-height:230px;overflow:auto}
+#toast{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:60;background:#2b3549;
+  border:1px solid #4a5772;border-radius:8px;padding:9px 16px;font-size:12px;opacity:0;transition:.25s;pointer-events:none}
+#toast.show{opacity:1}
+#exited{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(6,9,15,.9)}
+#exited .box{text-align:center}#exited h3{font-size:20px;margin:0 0 8px}#exited p{color:var(--muted);font-size:12px;margin:0 0 18px}
+</style>
+</head>
+<body>
+<div id="desktop">
+  <div id="hint"><b>Element Blocks Desktop · 交互预览</b><br>
+    右下角托盘图标：左键打开设置，右键弹出菜单。<br>
+    设置窗口里点击周期表卡片可启用 / 禁用元素；第二页可调轮换间隔，打开「预览加速」能立刻看到自动切换。<br>
+    配置写入 localStorage，结构与真实应用的 config.json 完全一致。</div>
+  <div class="dicon"><i></i>项目资料</div>
+  <div class="dicon"><i></i>设计稿</div>
+  <div class="dicon"><i></i>回收站</div>
+
+  <div id="tile">
+    <div class="top"><span id="t-num">92</span><span id="t-sym">U</span></div>
+    <div class="zh" id="t-zh">铀</div>
+    <div class="en" id="t-en">Uranium</div>
+    <div class="mass" id="t-mass">238.0</div>
+  </div>
+</div>
+
+<div id="taskbar">
+  <div class="tb-left"><div class="tb-dot"></div><div class="tb-dot"></div><div class="tb-dot"></div>
+    <span style="font-size:11px;color:#7f8aa2;margin-left:8px">任务栏上没有本应用图标</span></div>
+  <div class="tb-right"><span id="clock"></span>
+    <button id="tray-btn" title="Element Blocks Desktop（左键打开设置 / 右键菜单）">E</button></div>
+</div>
+
+<div id="tray-menu" class="hidden">
+  <button data-cmd="open">▣&nbsp; 打开设置…</button>
+  <button data-cmd="next">↻&nbsp; 立即切换下一个元素</button>
+  <hr>
+  <button data-cmd="pause"><span class="chk" id="m-pause"></span>暂停轮换</button>
+  <button data-cmd="auto"><span class="chk" id="m-auto"></span>开机自启</button>
+  <hr>
+  <button data-cmd="quit">✕&nbsp; 退出</button>
+</div>
+
+<div id="overlay" class="hidden">
+  <div id="win">
+    <div id="titlebar">
+      <div class="mark">E</div><div class="t">Element Blocks Desktop</div><div class="s">设置</div>
+      <div class="sp"></div><div class="ver">v1.0.0 · 交互预览</div>
+      <button id="close-win" title="关闭（应用继续在托盘运行）">×</button>
+    </div>
+    <div id="win-body">
+      <aside id="sidebar">
+        <div class="nav active" data-page="elements"><span class="ic">▦</span>元素周期表</div>
+        <div class="nav" data-page="rotation"><span class="ic">◷</span>轮换时间</div>
+        <div id="side-foot">点击元素卡片即可启用 / 禁用<br><span id="side-count">已启用 118 / 118</span></div>
+      </aside>
+      <main id="content">
+        <!-- 第一页 -->
+        <section id="page-elements">
+          <h1>元素周期表</h1>
+          <p class="sub">点按卡片启用或禁用该元素；只有已启用的元素会参与自动轮换。变淡的卡片表示已禁用，金色描边是当前显示的元素。</p>
+          <div class="toolbar">
+            <button class="btn" data-bulk="all">全选</button>
+            <button class="btn" data-bulk="none">全不选</button>
+            <button class="btn" data-bulk="natural">仅天然元素</button>
+            <button class="btn" data-bulk="reset">恢复默认</button>
+            <span class="count" id="tbl-count">已启用 118 / 118</span>
+          </div>
+          <div class="legend" id="legend"></div>
+          <div id="table-wrap"><div id="table"></div></div>
+        </section>
+        <!-- 第二页 -->
+        <section id="page-rotation" class="hidden">
+          <h1>轮换时间</h1>
+          <p class="sub">按设定的周期自动切换到下一个已启用的元素。顺序按原子序数推进，不会连续重复。</p>
+          <div class="card">
+            <div><div class="k">当前元素</div><div class="v" id="r-current">92 铀 U</div></div>
+            <div><div class="k">下一次切换</div><div class="v" id="r-next">从不</div></div>
+            <div><div class="k">已启用元素</div><div class="v" id="r-enabled">118 / 118</div></div>
+          </div>
+          <h2>切换间隔</h2>
+          <div class="opts" id="opts"></div>
+          <div class="toolbar" style="margin-top:14px">
+            <button class="btn primary" id="btn-next">立即切换下一个元素</button>
+            <span style="font-size:11px;color:var(--muted)" id="r-hint"></span>
+          </div>
+          <h2>常驻方块行为</h2>
+          <div class="row"><div class="lab"><b>预览加速</b><div>1 小时 ≈ 2 秒，方便在演示里看到自动轮换（真实应用按真实时间）</div></div>
+            <button class="sw" id="sw-speed"></button></div>
+          <div class="row"><div class="lab"><b>暂停轮换</b><div>开启后计时停止</div></div>
+            <button class="sw" id="sw-pause"></button></div>
+          <div class="row"><div class="lab"><b>开机自启</b><div>MSIX StartupTask / XDG autostart desktop 文件</div></div>
+            <button class="sw" id="sw-auto"></button></div>
+          <div class="row"><div class="lab"><b>鼠标点击穿透</b><div>方块不拦截桌面点击；Wayland 下不支持</div></div>
+            <button class="sw" id="sw-click"></button></div>
+          <div class="row"><div class="lab"><b>桌面固定位置</b><div>按工作区锚点定位</div></div>
+            <select id="sel-anchor"><option value="TopLeft">左上角</option><option value="TopRight">右上角</option>
+              <option value="BottomLeft">左下角</option><option value="BottomRight">右下角</option></select></div>
+          <div class="row"><div class="lab"><b>方块大小</b><div id="size-lab">132 px</div></div>
+            <input type="range" id="range-size" min="80" max="220" step="4" value="132" style="max-width:260px"></div>
+          <p class="note">设置会自动保存到本地配置文件，重启后保留；休眠或关机期间不会补跑切换。<br>
+            本预览用 localStorage 模拟同一份 config.json 结构：</p>
+          <button class="btn" id="btn-json">查看 / 隐藏配置 JSON</button>
+          <pre id="cfg-json" class="hidden"></pre>
+        </section>
+      </main>
+    </div>
+  </div>
+</div>
+
+<div id="exited" class="hidden"><div class="box"><h3>Element Blocks Desktop 已退出</h3>
+  <p>托盘图标与桌面方块已移除。真实应用中只有托盘菜单的「退出」会结束进程。</p>
+  <button class="btn primary" id="btn-restart">重新启动</button></div></div>
+<div id="toast"></div>
+
+<script>
+/* ===== 内嵌的共享数据契约（由 tools/gen_preview.py 注入） ===== */
+const DATA   = __ELEMENTS_JSON__;
+const THEME  = __THEME_JSON__;
+const INTERVALS = __INTERVALS_JSON__;
+/* ============================================================ */
+
+const ELS = DATA.elements, LAYOUT = DATA.layout, BY_SYM = Object.fromEntries(ELS.map(e=>[e.symbol,e]));
+const KEY = 'ebd.config.v1';
+let cfg, demoSpeed = false, saveTimer = null, toastTimer = null, exited = false;
+
+function defaults(){
+  return { version:1, enabledSymbols:ELS.map(e=>e.symbol), rotation:'never',
+    position:{anchor:'TopRight',offsetX:32,offsetY:32,monitorIndex:0},
+    blockSize:132, clickThrough:false, autoStart:false, paused:false,
+    lastSymbol:'U', nextFireUtc:null, rotationCursor:0 };
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return defaults();
+    const c = Object.assign(defaults(), JSON.parse(raw));
+    const known = new Set(ELS.map(e=>e.symbol));
+    c.enabledSymbols = [...new Set((c.enabledSymbols||[]).filter(s=>known.has(s)))];
+    if(!INTERVALS.some(i=>i.id===c.rotation)) c.rotation='never';
+    if(!['TopLeft','TopRight','BottomLeft','BottomRight'].includes(c.position.anchor)) c.position.anchor='TopRight';
+    c.blockSize = Math.max(80,Math.min(320,c.blockSize));
+    if(c.lastSymbol && !known.has(c.lastSymbol)) c.lastSymbol=null;
+    return c;
+  }catch(e){ return defaults(); }
+}
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    localStorage.setItem(KEY, JSON.stringify(cfg));
+    toast('配置已保存 · config.json 结构');
+    renderCfgJson();
+  },300);
+}
+function toast(text){
+  const t=document.getElementById('toast'); t.textContent=text; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1400);
+}
+
+/* ---------- 当前元素 / 方块 ---------- */
+function enabledList(){ return ELS.filter(e=>cfg.enabledSymbols.includes(e.symbol)); }
+function current(){ return cfg.lastSymbol ? BY_SYM[cfg.lastSymbol] || null : null; }
+function renderTile(){
+  const e=current(), t=document.getElementById('tile');
+  t.style.width=t.style.height=cfg.blockSize+'px';
+  const scale=cfg.blockSize/132;
+  t.querySelector('.top').style.fontSize=(15*scale)+'px';
+  t.querySelector('.top').style.height=(18*scale)+'px';
+  document.getElementById('t-zh').style.fontSize=(50*scale)+'px';
+  document.getElementById('t-en').style.fontSize=(13*scale)+'px';
+  document.getElementById('t-mass').style.fontSize=(14*scale)+'px';
+  t.classList.toggle('clickthrough',cfg.clickThrough);
+  const fg=THEME.tile.foreground, ac=THEME.tile.accent;
+  if(!e){
+    document.getElementById('t-num').textContent='--'; document.getElementById('t-sym').textContent='';
+    document.getElementById('t-zh').textContent='—'; document.getElementById('t-zh').style.fontSize=(34*scale)+'px';
+    document.getElementById('t-en').textContent='未启用任何元素'; document.getElementById('t-mass').textContent='请在设置中启用';
+    document.getElementById('t-num').style.color=fg;
+    return;
+  }
+  document.getElementById('t-num').textContent=e.number;
+  document.getElementById('t-sym').textContent=e.symbol;
+  document.getElementById('t-zh').textContent=e.nameZh;
+  document.getElementById('t-zh').style.fontSize=(50*scale)+'px';
+  document.getElementById('t-en').textContent=e.nameEn;
+  document.getElementById('t-mass').textContent=e.mass;
+  const c=e.radioactive?ac:fg;
+  document.getElementById('t-num').style.color=c; document.getElementById('t-sym').style.color=c;
+  document.getElementById('tile').title=e.number+' '+e.symbol+' '+e.nameZh+' / '+e.nameEn+' · '+e.mass;
+}
+function placeTile(){
+  const t=document.getElementById('tile'), s=cfg.blockSize, off=cfg.position.offsetX;
+  const bottom=46+cfg.position.offsetY;
+  t.style.left=''; t.style.right=''; t.style.top=''; t.style.bottom='';
+  if(cfg.position.anchor.includes('Right')) t.style.right=off+'px'; else t.style.left=off+'px';
+  if(cfg.position.anchor.includes('Bottom')) t.style.bottom=bottom+'px'; else t.style.top=cfg.position.offsetY+'px';
+}
+
+/* ---------- 周期表 ---------- */
+function buildTable(){
+  const g=document.getElementById('table');
+  LAYOUT.groupLabels && Object.keys(LAYOUT.groupLabels).forEach(c=>{
+    const d=document.createElement('div'); d.className='hdr'; d.textContent=LAYOUT.groupLabels[c];
+    d.style.gridRow=1; d.style.gridColumn=Number(c)+1; g.appendChild(d);
+  });
+  for(let r=1;r<=7;r++){
+    const d=document.createElement('div'); d.className='hdr'; d.textContent=r;
+    d.style.gridRow=r+1; d.style.gridColumn=1; g.appendChild(d);
+  }
+  [['镧系',9],['锕系',10]].forEach(([txt,row])=>{
+    const d=document.createElement('div'); d.className='hdr'; d.textContent=txt;
+    d.style.gridRow=row+1; d.style.gridColumn='2 / span 2'; g.appendChild(d);
+  });
+  LAYOUT.placeholders.forEach(p=>{
+    const d=document.createElement('div'); d.className='ph';
+    d.innerHTML=p.label+'<br><b>'+p.subLabel+'</b>';
+    d.style.gridRow=p.row+1; d.style.gridColumn=p.column+1; g.appendChild(d);
+  });
+  ELS.forEach(e=>{
+    const st=THEME.categories[e.category]||THEME.categories.alkali;
+    const d=document.createElement('div'); d.className='el'; d.dataset.sym=e.symbol;
+    d.style.gridRow=e.row+1; d.style.gridColumn=e.column+1;
+    d.style.background=st.fill; d.style.color=st.text; d.style.borderColor=st.border;
+    d.style.borderWidth=(['transition','lanthanide','actinide'].includes(e.category)?'1.6px':'1px');
+    const ac=e.radioactive?THEME.tile.accent:st.text;
+    d.innerHTML='<div class="r1"><span style="color:'+ac+'">'+e.number+'</span><b style="color:'+ac+'">'+e.symbol+'</b></div>'+
+      '<div class="zh">'+e.nameZh+'</div><div class="mass">'+e.mass+'</div>';
+    d.title=e.number+' '+e.symbol+' '+e.nameZh+(e.pinyin?' ('+e.pinyin+')':'')+' / '+e.nameEn+
+      '\n'+e.categoryLabel+' · 相对原子质量 '+e.mass+(e.radioactive?'\n放射性元素':'');
+    d.addEventListener('click',()=>toggle(e.symbol));
+    g.appendChild(d);
+  });
+  const lg=document.getElementById('legend');
+  Object.entries(THEME.categories).forEach(([k,v])=>{
+    const name=(ELS.find(e=>e.category===k)||{}).categoryLabel||k;
+    const s=document.createElement('div');
+    s.innerHTML='<span class="sw" style="background:'+v.fill+';border-color:'+v.border+'"></span>'+name;
+    lg.appendChild(s);
+  });
+}
+function toggle(sym){
+  const i=cfg.enabledSymbols.indexOf(sym);
+  if(i>=0) cfg.enabledSymbols.splice(i,1); else cfg.enabledSymbols.push(sym);
+  if(i>=0 && cfg.lastSymbol===sym){ const l=enabledList(); cfg.lastSymbol=l.length?l[0].symbol:null; }
+  else if(i<0 && !cfg.lastSymbol) cfg.lastSymbol=sym;
+  cfg.nextFireUtc=null;
+  refreshAll(); save();
+}
+function refreshTable(){
+  document.querySelectorAll('.el').forEach(d=>{
+    const on=cfg.enabledSymbols.includes(d.dataset.sym);
+    d.classList.toggle('off',!on);
+    d.classList.toggle('cur',on && d.dataset.sym===cfg.lastSymbol);
+  });
+  const n=cfg.enabledSymbols.length;
+  document.getElementById('tbl-count').textContent='已启用 '+n+' / '+ELS.length;
+  document.getElementById('side-count').textContent='已启用 '+n+' / '+ELS.length;
+  document.getElementById('r-enabled').textContent=n+' / '+ELS.length;
+}
+
+/* ---------- 轮换 ---------- */
+function interval(){ return INTERVALS.find(i=>i.id===cfg.rotation)||INTERVALS[0]; }
+function durationMs(min){ return demoSpeed ? Math.max(700, min*1000*2/60) : min*60000; }
+function schedule(){
+  const iv=interval();
+  if(iv.minutes<=0 || cfg.paused || cfg.enabledSymbols.length<2){ cfg.nextFireUtc=null; return; }
+  cfg.nextFireUtc=new Date(Date.now()+durationMs(iv.minutes)).toISOString();
+}
+function rotateNext(){
+  const l=enabledList(); if(!l.length) return;
+  const i=l.findIndex(e=>e.symbol===cfg.lastSymbol);
+  cfg.lastSymbol=l[i<0?0:(i+1)%l.length].symbol;
+}
+function tick(){
+  if(exited) return;
+  if(cfg.nextFireUtc && Date.now()>=Date.parse(cfg.nextFireUtc)){
+    rotateNext(); schedule(); save(); refreshAll();
+  }
+  renderStatus();
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false});
+}
+function fmt(ms){
+  if(ms<=0) return '即将';
+  const s=Math.round(ms/1000);
+  if(demoSpeed) return s+' 秒后（加速）';
+  return s>=3600 ? Math.floor(s/3600)+' 小时 '+Math.floor(s%3600/60)+' 分后' : Math.max(1,Math.floor(s/60))+' 分钟后';
+}
+function renderStatus(){
+  const e=current(), iv=interval();
+  document.getElementById('r-current').textContent=e?(e.number+' '+e.nameZh+' '+e.symbol):'未启用任何元素';
+  const inactive=iv.minutes<=0||cfg.paused||cfg.enabledSymbols.length<2;
+  let text;
+  if(inactive) text=cfg.paused?'已暂停':(cfg.enabledSymbols.length<2?'已启用元素不足 2 个':'从不');
+  else if(cfg.nextFireUtc){
+    const t=Date.parse(cfg.nextFireUtc);
+    text=new Date(t).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})
+      +'（'+fmt(t-Date.now())+'）';
+  } else text='排程中…';
+  document.getElementById('r-next').textContent=text;
+  document.getElementById('r-hint').textContent=inactive?'':'下一次切换时刻会写入配置，重启 / 休眠恢复后继续按该时刻执行。';
+  document.getElementById('r-enabled').textContent=cfg.enabledSymbols.length+' / '+ELS.length;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.toggle('sel',o.dataset.id===cfg.rotation));
+  document.querySelectorAll('.opt input').forEach(r=>{r.checked=r.dataset.id===cfg.rotation;});
+  document.getElementById('sw-speed').classList.toggle('on',demoSpeed);
+  document.getElementById('sw-pause').classList.toggle('on',cfg.paused);
+  document.getElementById('sw-auto').classList.toggle('on',cfg.autoStart);
+  document.getElementById('sw-click').classList.toggle('on',cfg.clickThrough);
+  document.getElementById('sel-anchor').value=cfg.position.anchor;
+  document.getElementById('range-size').value=cfg.blockSize;
+  document.getElementById('size-lab').textContent=cfg.blockSize+' px';
+  document.getElementById('m-pause').textContent=cfg.paused?'✓':'';
+  document.getElementById('m-auto').textContent=cfg.autoStart?'✓':'';
+}
+function renderCfgJson(){
+  const p=document.getElementById('cfg-json');
+  if(!p.classList.contains('hidden')) p.textContent=JSON.stringify(cfg,null,2);
+}
+function refreshAll(){ renderTile(); placeTile(); refreshTable(); renderStatus(); renderCfgJson(); }
+
+/* ---------- 间隔选项 ---------- */
+function buildOpts(){
+  const box=document.getElementById('opts');
+  INTERVALS.forEach(o=>{
+    const l=document.createElement('label'); l.className='opt'; l.dataset.id=o.id;
+    l.innerHTML='<input type="radio" name="iv" data-id="'+o.id+'"><div><div class="lab">'+o.label+'</div>'+
+      '<div class="desc">'+o.description+'</div></div>';
+    l.querySelector('input').addEventListener('change',()=>{
+      cfg.rotation=o.id; cfg.nextFireUtc=null; schedule(); refreshAll(); save();
+    });
+    box.appendChild(l);
+  });
+}
+
+/* ---------- 交互 ---------- */
+function openSettings(){ if(exited) return; document.getElementById('overlay').classList.remove('hidden'); hideTray(); }
+function closeSettings(){ document.getElementById('overlay').classList.add('hidden'); }
+function showTray(){ document.getElementById('tray-menu').classList.remove('hidden'); }
+function hideTray(){ document.getElementById('tray-menu').classList.add('hidden'); }
+function showPage(p){
+  document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===p));
+  document.getElementById('page-elements').classList.toggle('hidden',p!=='elements');
+  document.getElementById('page-rotation').classList.toggle('hidden',p!=='rotation');
+}
+
+document.getElementById('tray-btn').addEventListener('click',e=>{e.stopPropagation();openSettings();});
+document.getElementById('tray-btn').addEventListener('contextmenu',e=>{
+  e.preventDefault(); document.getElementById('tray-menu').classList.toggle('hidden');});
+document.getElementById('tray-menu').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const c=b.dataset.cmd;
+  if(c==='open') openSettings();
+  if(c==='next'){ rotateNext(); schedule(); refreshAll(); save(); }
+  if(c==='pause'){ cfg.paused=!cfg.paused; cfg.nextFireUtc=null; schedule(); refreshAll(); save(); }
+  if(c==='auto'){ cfg.autoStart=!cfg.autoStart; refreshAll(); save(); }
+  if(c==='quit'){ exited=true; hideTray(); closeSettings();
+    document.getElementById('tile').classList.add('hidden');
+    document.getElementById('tray-btn').classList.add('hidden');
+    document.getElementById('exited').classList.remove('hidden'); }
+});
+document.addEventListener('click',e=>{ if(!e.target.closest('#tray-menu')&&!e.target.closest('#tray-btn')) hideTray(); });
+document.getElementById('close-win').addEventListener('click',closeSettings);
+document.getElementById('overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeSettings(); });
+document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>showPage(n.dataset.page)));
+document.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>{
+  const k=b.dataset.bulk;
+  if(k==='all') cfg.enabledSymbols=ELS.map(e=>e.symbol);
+  if(k==='none') cfg.enabledSymbols=[];
+  if(k==='natural') cfg.enabledSymbols=ELS.filter(e=>!e.synthetic).map(e=>e.symbol);
+  if(k==='reset'){ cfg=defaults(); demoSpeed=false; }
+  if(!cfg.enabledSymbols.includes(cfg.lastSymbol)){
+    const l=enabledList(); cfg.lastSymbol=l.length?l[0].symbol:null;
+  }
+  cfg.nextFireUtc=null; schedule(); refreshAll(); save();
+}));
+document.getElementById('btn-next').addEventListener('click',()=>{
+  rotateNext(); schedule(); refreshAll(); save(); toast('已切换到下一个已启用元素');
+});
+document.getElementById('sw-speed').addEventListener('click',()=>{
+  demoSpeed=!demoSpeed; cfg.nextFireUtc=null; schedule(); renderStatus(); save();
+  toast(demoSpeed?'预览加速已开启':'预览加速已关闭');
+});
+document.getElementById('sw-pause').addEventListener('click',()=>{
+  cfg.paused=!cfg.paused; cfg.nextFireUtc=null; schedule(); refreshAll(); save();});
+document.getElementById('sw-auto').addEventListener('click',()=>{cfg.autoStart=!cfg.autoStart;refreshAll();save();});
+document.getElementById('sw-click').addEventListener('click',()=>{cfg.clickThrough=!cfg.clickThrough;refreshAll();save();});
+/* 单击方块：只吞事件，不改元素 / 可见性 / 位置 / 配置（对应 Linux 1.0.0-4 修复） */
+document.getElementById('tile').addEventListener('click',e=>{
+  e.preventDefault(); toast('单击已吞掉：方块状态保持不变');
+});
+document.getElementById('sel-anchor').addEventListener('change',e=>{
+  cfg.position.anchor=e.target.value; refreshAll(); save();});
+document.getElementById('range-size').addEventListener('input',e=>{
+  cfg.blockSize=Number(e.target.value); refreshAll(); save();});
+document.getElementById('btn-json').addEventListener('click',()=>{
+  const p=document.getElementById('cfg-json'); p.classList.toggle('hidden'); renderCfgJson();});
+document.getElementById('btn-restart').addEventListener('click',()=>{
+  exited=false; document.getElementById('exited').classList.add('hidden');
+  document.getElementById('tile').classList.remove('hidden');
+  document.getElementById('tray-btn').classList.remove('hidden');
+  cfg.nextFireUtc=null; schedule(); refreshAll(); save();});
+
+/* ---------- boot ---------- */
+cfg=load();
+if(!cfg.enabledSymbols.includes(cfg.lastSymbol)){ const l=enabledList(); cfg.lastSymbol=l.length?l[0].symbol:null; }
+buildTable(); buildOpts(); schedule(); refreshAll(); save();
+setInterval(tick,500);
+</script>
+</body>
+</html>

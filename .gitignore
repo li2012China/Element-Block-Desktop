@@ -1,0 +1,21 @@
+# ===== 构建中间产物（可由源码重新构建，不入库）=====
+windows/src/ElementBlocks.Desktop/bin/
+windows/src/ElementBlocks.Desktop/obj/
+**/bin/
+**/obj/
+.vs/
+.build/
+
+# ===== 本地工作区私有数据 =====
+.workbuddy/
+
+# ===== 代码签名私钥（公开仓库禁止泄露；公开证书 .cer 保留）=====
+dist/certs/*.pfx
+
+# ===== 编辑器/系统杂项 =====
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc

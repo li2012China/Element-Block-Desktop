@@ -1,0 +1,16 @@
+<Application
+    x:Class="ElementBlocks.Desktop.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- 中文默认字体，避免 104-118 号元素的扩展汉字出现豆腐块 -->
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

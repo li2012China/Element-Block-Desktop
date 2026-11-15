@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <rect x="2.5" y="2.5" width="59" height="59" rx="7"
+        fill="#EFE3C0" stroke="#8C7B55" stroke-width="2.5"/>
+  <rect x="9" y="9" width="9" height="9" fill="#B23A2E"/>
+  <text x="33" y="47" text-anchor="middle"
+        font-family="DejaVu Sans, Noto Sans, sans-serif"
+        font-weight="bold" font-size="40" fill="#2B2A28">E</text>
+</svg>

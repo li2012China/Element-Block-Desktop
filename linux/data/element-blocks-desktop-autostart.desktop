@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Element Blocks Desktop
+Name[zh_CN]=元素方块桌面
+Comment=Start the always-on desktop element block at login
+Exec=element-blocks-desktop
+Icon=element-blocks-desktop
+Terminal=false
+Categories=Utility;
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=3
+X-KDE-autostart-after=panel

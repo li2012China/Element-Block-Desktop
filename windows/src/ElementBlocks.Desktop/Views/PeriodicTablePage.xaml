@@ -1,0 +1,46 @@
+<Page
+    x:Class="ElementBlocks.Desktop.Views.PeriodicTablePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24,14,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Spacing="2">
+            <TextBlock Text="元素周期表" FontSize="24" FontWeight="SemiBold"/>
+            <TextBlock Text="点按卡片启用或禁用该元素；只有已启用的元素会参与自动轮换。灰色卡片表示已禁用。"
+                       FontSize="12" Opacity="0.65" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="0,12,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="全选" Click="SelectAll_Click"/>
+                <Button Content="全不选" Click="SelectNone_Click"/>
+                <Button Content="仅天然元素" Click="OnlyNatural_Click"/>
+                <Button Content="恢复默认" Click="Reset_Click"/>
+            </StackPanel>
+            <StackPanel x:Name="LegendPanel" Grid.Column="1" Orientation="Horizontal"
+                        Spacing="12" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </Grid>
+
+        <ScrollViewer Grid.Row="2"
+                      HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto"
+                      ZoomMode="Disabled"
+                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                      CornerRadius="6" Padding="12">
+            <Grid x:Name="TableGrid" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        </ScrollViewer>
+    </Grid>
+</Page>

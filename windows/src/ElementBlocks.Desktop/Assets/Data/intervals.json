@@ -1,0 +1,50 @@
+[
+  {
+    "id": "never",
+    "label": "从不",
+    "minutes": 0,
+    "description": "始终显示当前元素，不自动切换"
+  },
+  {
+    "id": "m30",
+    "label": "每 30 分钟",
+    "minutes": 30,
+    "description": "每半小时切换一次"
+  },
+  {
+    "id": "h1",
+    "label": "每小时",
+    "minutes": 60,
+    "description": "每小时整点切换一次"
+  },
+  {
+    "id": "h2",
+    "label": "每 2 小时",
+    "minutes": 120,
+    "description": "每两小时切换一次"
+  },
+  {
+    "id": "h3",
+    "label": "每 3 小时",
+    "minutes": 180,
+    "description": "每三小时切换一次"
+  },
+  {
+    "id": "h6",
+    "label": "每 6 小时",
+    "minutes": 360,
+    "description": "每六小时切换一次"
+  },
+  {
+    "id": "h12",
+    "label": "每 12 小时",
+    "minutes": 720,
+    "description": "每半天切换一次"
+  },
+  {
+    "id": "d1",
+    "label": "每天",
+    "minutes": 1440,
+    "description": "每 24 小时切换一次"
+  }
+]

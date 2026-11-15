@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elementblocks.local/schemas/config-v1.json",
+  "title": "Element Blocks Desktop configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "enabledSymbols",
+    "rotation"
+  ],
+  "properties": {
+    "version": {
+      "const": 1,
+      "description": "schema version, bumped when migrating"
+    },
+    "enabledSymbols": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 3
+      },
+      "description": "symbols the rotation picker may choose from"
+    },
+    "rotation": {
+      "type": "string",
+      "enum": [
+        "never",
+        "m30",
+        "h1",
+        "h2",
+        "h3",
+        "h6",
+        "h12",
+        "d1"
+      ]
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "anchor": {
+          "enum": [
+            "TopLeft",
+            "TopRight",
+            "BottomLeft",
+            "BottomRight",
+            "Custom"
+          ]
+        },
+        "offsetX": {
+          "type": "integer",
+          "minimum": -4096,
+          "maximum": 4096
+        },
+        "offsetY": {
+          "type": "integer",
+          "minimum": -4096,
+          "maximum": 4096
+        },
+        "monitorIndex": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "blockSize": {
+      "type": "integer",
+      "minimum": 80,
+      "maximum": 320
+    },
+    "clickThrough": {
+      "type": "boolean"
+    },
+    "autoStart": {
+      "type": "boolean"
+    },
+    "paused": {
+      "type": "boolean"
+    },
+    "opacity": {
+      "type": "number",
+      "minimum": 0.1,
+      "maximum": 1.0
+    },
+    "lastSymbol": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "nextFireUtc": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "rotationCursor": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}
